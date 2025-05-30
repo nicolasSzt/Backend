@@ -4,39 +4,19 @@ import { ENVIRONMENT } from "../enviroment.js";
 import productsRouter from "./routes/product.routes.js";
 import transporter from "./config/mail.config.js";
 import userRouter from "./routes/users.routes.js";
+import cors from "cors";
+
 connectDB();
 
 const app = express();
+
+app.use(cors())
+
 app.use(express.json());
 
 app.get("/", (request, response) => {
   response.send("<h1>Hola soy una respuesta de express</h1>");
 });
-
-// const products = [
-//   {
-//     title: "Tv samsung",
-//     price: 4000,
-//     id: 1,
-//   },
-//   {
-//     title: "Tv LG",
-//     price: 5000,
-//     id: 2,
-//   },
-//   {
-//     title: "Tv Noblex",
-//     price: 6000,
-//     id: 3,
-//   },
-// ];
-
-// app.get("/productos", (request, response) => {
-//   let max_price = request.query.max_price;
-//   let min_price = request.query.min_price;
-//   const filter_list = products.filter((product) => product.price <= max_price);
-//   response.send(filter_list);
-// });
 
 export const sendVerificationEmail = async ({ email, name, redirectUrl }) => {
   const result = await transporter.sendMail({

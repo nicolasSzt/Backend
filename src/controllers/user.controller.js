@@ -89,6 +89,7 @@ class UserController {
   }
   async login(request, response) {
     try {
+    console.log(request.body)
       const { email, password } = request.body;
       const user = await userRepository.findByEmail({ email });
 
@@ -100,12 +101,12 @@ class UserController {
         throw { status: 400, message: "no hay password" };
       }
 
-      if (user) {
+      if (!user) {
         throw { status: 400, message: "Usuario no encontrado" };
       }
 
       if (!user.verified) {
-        throw { status: 400, message: "Usuario no encontrado" };
+        throw { status: 400, message: "Usuario no verificado" };
       }
 
       const is_same_password = await bcrypt.compare(password, user.password);
@@ -130,6 +131,43 @@ class UserController {
           authorization_token: authorization_token,
         },
       });
+    } catch (error) {
+      if (error.status) {
+        response.status(error.status).send({
+          message: error.message,
+          ok: false,
+        });
+      }
+    }
+  }
+
+  async resendVerificationEmail(request, response) {
+    try {
+      const { email } = request.body;
+      const user = await userRepository.findByEmail({ email });
+      
+      if (!user) {
+        throw {
+          status: 404,
+          message: "usario no encontrado",
+        };
+      }else {
+        const verification_token = jwt.sign(
+          { email: email },
+          ENVIRONMENT.JWT_SECRET_KEY
+        );
+        await sendVerificationEmail({
+          email,
+          name: user.name,
+          redirect_url: `http://localhost:3000/api/users/verify?verify_token=${verification_token}`,
+        });
+        response.send({
+          ok: true,
+          message: "mail reenviado  con exito",
+          status: 200,
+        });
+      }
+
     } catch (error) {
       if (error.status) {
         response.status(error.status).send({
