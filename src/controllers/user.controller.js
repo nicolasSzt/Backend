@@ -17,39 +17,55 @@ class UserController {
   }
 
   async registrer(request, response) {
-    if (
-      !request.body ||
-      !request.body.name ||
-      !request.body.password ||
-      !request.body.email
-    ) {
-      response.status(400).send({
-        message: "Registro invalido",
-        ok: false,
+    try {
+      if (
+        !request.body ||
+        !request.body.name ||
+        !request.body.password ||
+        !request.body.email
+      ) {
+        response.status(400).send({
+          message: "Registro invalido",
+          ok: false,
+        });
+      }
+
+      const password_hased = await bcrypt.hash(request.body.password, 12);
+
+      await userRepository.create({
+        name: request.body.name,
+        password: password_hased,
+        email: request.body.email,
       });
+
+      const verification_token = jwt.sign(
+        { email: request.body.email },
+        "clave_super_secreta123_nadie_la_conoce"
+      );
+
+      await sendVerificationEmail({
+        email: request.body.email,
+        name: request.body.name,
+        redirect_url: `http://localhost:3000/api/users/verify?verify_token=${verification_token}`,
+      });
+
+      response.send({
+        ok: true,
+      });
+    }  catch (error) {
+      console.log("Hubo un error", error);
+      if (error.status) {
+        response.status(error.status).send({
+          message: error.message,
+          ok: false,
+        });
+        return;
+      } else {
+        response
+          .status(500)
+          .send({ message: "Error interno del servidor", ok: false });
+      }
     }
-    const password_hased = await bcrypt.hash(request.body.password, 12);
-
-    await userRepository.create({
-      name: request.body.name,
-      password: password_hased,
-      email: request.body.email,
-    });
-
-    const verification_token = jwt.sign(
-      { email: request.body.email },
-      "clave_super_secreta123_nadie_la_conoce"
-    );
-
-    await sendVerificationEmail({
-      email: request.body.email,
-      name: request.body.name,
-      redirect_url: `http://localhost:3000/api/users/verify?verify_token=${verification_token}`,
-    });
-
-    response.send({
-      ok: true,
-    });
   }
 
   async getAll(request, response) {
@@ -71,25 +87,28 @@ class UserController {
 
       const content = jwt.verify(verificationToken, ENVIRONMENT.JWT_SECRET_KEY);
 
-      console.log(content);
       await userRepository.verifyUserEmail({ email: content.email });
       response.send({
         ok: true,
         message: "Usuario encontrado con exito",
       });
     } catch (error) {
-      console.log(`hubo un error ${error}`);
+      console.log("Hubo un error", error);
       if (error.status) {
         response.status(error.status).send({
           message: error.message,
           ok: false,
         });
+        return;
+      } else {
+        response
+          .status(500)
+          .send({ message: "Error interno del servidor", ok: false });
       }
     }
   }
   async login(request, response) {
     try {
-    console.log(request.body)
       const { email, password } = request.body;
       const user = await userRepository.findByEmail({ email });
 
@@ -114,6 +133,7 @@ class UserController {
       if (!is_same_password) {
         throw { status: 400, message: "Contrasenia no es valida" };
       }
+
       const authorization_token = jwt.sign(
         {
           name: user.name,
@@ -132,11 +152,17 @@ class UserController {
         },
       });
     } catch (error) {
+      console.log("Hubo un error", error);
       if (error.status) {
         response.status(error.status).send({
           message: error.message,
           ok: false,
         });
+        return;
+      } else {
+        response
+          .status(500)
+          .send({ message: "Error interno del servidor", ok: false });
       }
     }
   }
@@ -145,13 +171,13 @@ class UserController {
     try {
       const { email } = request.body;
       const user = await userRepository.findByEmail({ email });
-      
+
       if (!user) {
         throw {
           status: 404,
           message: "usario no encontrado",
         };
-      }else {
+      } else {
         const verification_token = jwt.sign(
           { email: email },
           ENVIRONMENT.JWT_SECRET_KEY
@@ -167,7 +193,6 @@ class UserController {
           status: 200,
         });
       }
-
     } catch (error) {
       if (error.status) {
         response.status(error.status).send({

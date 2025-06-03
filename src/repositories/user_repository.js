@@ -7,7 +7,14 @@ class UserRepository {
       await user.save();
       console.log("Usuario creado exitosamente!");
     } catch (error) {
-      console.log(error);
+      if (error.code === 11000) {
+        throw {
+          message: "Email repetido",
+          status: 400,
+        };
+      } else {
+        throw error;
+      }
     }
   }
 
