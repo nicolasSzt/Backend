@@ -19,23 +19,6 @@ app.get("/", (request, response) => {
   response.send("<h1>Hola soy una respuesta de express</h1>");
 });
 
-export const sendVerificationEmail = async ({ email, name, redirectUrl }) => {
-  const result = await transporter.sendMail({
-    from: ENVIRONMENT.GMAIL_USERNAME,
-    to: email,
-    subject: "Verifica tu correo electronico",
-    html: `
-            <h1>Bienvenido ${name}</h1>
-            <p>
-                Necesitamos que des click al siguiente link para verificar que esta es tu cuenta, en caso de no reconocer este registro desestima el mail.
-            </p>
-            <a href="${redirectUrl}">Verificar cuenta</a>
-            <span> Tienes 7 dias para dar click al link<span/>
-            `,
-  });
-  console.log("Mail enviado:", result);
-};
-
 app.use("/api/products", productsRouter);
 app.use("/api/users", userRouter);
 

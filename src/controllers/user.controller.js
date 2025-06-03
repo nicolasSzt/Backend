@@ -1,7 +1,6 @@
 import userRepository from "../repositories/user_repository.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { sendVerificationEmail } from "../app.js";
 import { ENVIRONMENT } from "../../enviroment.js";
 
 class UserController {
@@ -15,6 +14,23 @@ class UserController {
     });
     response.send("Recibido!!");
   }
+
+  sendVerificationEmail = async ({ email, name, redirectUrl }) => {
+    const result = await transporter.sendMail({
+      from: ENVIRONMENT.GMAIL_USERNAME,
+      to: email,
+      subject: "Verifica tu correo electronico",
+      html: `
+            <h1>Bienvenido ${name}</h1>
+            <p>
+                Necesitamos que des click al siguiente link para verificar que esta es tu cuenta, en caso de no reconocer este registro desestima el mail.
+            </p>
+            <a href="${redirectUrl}">Verificar cuenta</a>
+            <span> Tienes 7 dias para dar click al link<span/>
+            `,
+    });
+    console.log("Mail enviado:", result);
+  };
 
   async registrer(request, response) {
     try {
@@ -52,7 +68,7 @@ class UserController {
       response.send({
         ok: true,
       });
-    }  catch (error) {
+    } catch (error) {
       console.log("Hubo un error", error);
       if (error.status) {
         response.status(error.status).send({
