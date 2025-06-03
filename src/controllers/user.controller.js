@@ -64,7 +64,6 @@ class UserController {
         name: request.body.name,
         redirect_url: `http://localhost:3000/api/users/verify?verify_token=${verification_token}`,
       });
-
       response.send({
         ok: true,
       });
