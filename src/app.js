@@ -1,3 +1,4 @@
+console.log('hola')
 import { connectDB } from "./config/db.config.js";
 import express from "express";
 import { ENVIRONMENT } from "../enviroment.js";
