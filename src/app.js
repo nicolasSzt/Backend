@@ -3,7 +3,6 @@ import { connectDB } from "./config/db.config.js";
 import express from "express";
 import { ENVIRONMENT } from "../enviroment.js";
 import productsRouter from "./routes/product.routes.js";
-import transporter from "./config/mail.config.js";
 import userRouter from "./routes/users.routes.js";
 import cors from "cors";
 
