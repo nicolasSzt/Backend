@@ -2,6 +2,7 @@ import userRepository from "../repositories/user_repository.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { ENVIRONMENT } from "../../enviroment.js";
+import transporter from "../config/mail.config.js";
 
 class UserController {
   async create(request, response) {
@@ -32,7 +33,7 @@ class UserController {
     console.log("Mail enviado:", result);
   };
 
-  async registrer(request, response) {
+  async register(request, response) {
     try {
       if (
         !request.body ||

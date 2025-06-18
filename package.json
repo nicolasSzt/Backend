@@ -1,16 +1,17 @@
 {
   "name": "clase-11-mongoose",
   "version": "1.0.0",
-  "main": "./app.js",
+  "main": "./src/app.js",
+  "type": "module",
   "scripts": {
     "start": "node ./src/app.js",
     "dev": "nodemon ./src/app.js",
-    "lint:fix": "eslint . --ext .ts --fix",
-    "ts:check": "tsc --noEmit",
-    "check": "npm run lint:fix && npm run ts:check"
+    "lint:fix": "eslint . --ext .js --fix",
+    "check": "npm run lint:fix"
   },
-  "type": "module",
   "license": "ISC",
+  "author": "",
+  "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
@@ -21,8 +22,6 @@
     "nodemailer": "^7.0.3",
     "nodemon": "^3.1.10"
   },
-  "author": "",
-  "description": "",
   "devDependencies": {
     "@eslint/js": "^9.26.0",
     "eslint": "^9.26.0",

@@ -1,13 +1,13 @@
-import { Schema, model } from "mongoose";
-import { RoleMembersWorkspace } from "../config/constants/members_workspace_roles";
+import { Schema,model } from "mongoose";
+import { AVAILABLE_ROLES_WORKSPACE_MEMBERS } from "../dictionaries/members_workspace_roles.js";
 
-const workspacesMemberSchema = new Schema({
+const workspaceMembersSchema = new Schema({
   workspace_id: {
     type: Schema.ObjectId,
     ref: "Workspace",
     required: true,
   },
-  
+
   userId: {
     type: Schema.ObjectId,
     ref: "Workspace",
@@ -17,10 +17,13 @@ const workspacesMemberSchema = new Schema({
   role: {
     type: String,
     require: true,
-    enum: RoleMembersWorkspace,
+    enum: AVAILABLE_ROLES_WORKSPACE_MEMBERS,
   },
 });
 
-const workspacesMember = model("members_workspace", workspacesMemberSchema);
+const WorkspaceMember = model(
+  "members_workspaces",
+  workspaceMembersSchema
+);
 
-export default workspacesMember;
+export default WorkspaceMember;
