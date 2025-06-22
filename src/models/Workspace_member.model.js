@@ -8,7 +8,7 @@ const workspaceMembersSchema = new Schema({
     required: true,
   },
 
-  userId: {
+  user_id: {
     type: Schema.ObjectId,
     ref: "Workspace",
     required: true,

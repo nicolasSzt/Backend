@@ -16,7 +16,14 @@ class MembersWorkspaceRepository {
   async getAllByUserId(user_id) {
     return await WorkspaceMember.find({ user_id: user_id });
   }
+
+  async getMemberByWorkspaceIdAndUserId(workspace_id, user_id) {
+    return await WorkspaceMember.findOne({
+      workspace_id: workspace_id,
+      user_id: user_id,
+    });
+  }
 }
 
-const members_workspace_repository = new MembersWorkspaceRepository;
+const members_workspace_repository = new MembersWorkspaceRepository();
 export default members_workspace_repository;

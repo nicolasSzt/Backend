@@ -13,7 +13,7 @@ const workspacesSchema = new Schema({
   owner_id: {
     type: Schema.ObjectId,
     ref: "user",
-    required: true,
+    required: true, 
   },
 
   created_at: {

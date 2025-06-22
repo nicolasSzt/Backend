@@ -1,3 +1,6 @@
+import jwt from "jsonwebtoken";
+import { ENVIRONMENT } from "../../enviroment.js";
+
 const authorizationMiddleware = (request, response, next) => {
   try {
     const authorization_header = request.headers["authorization"];
@@ -7,7 +10,6 @@ const authorizationMiddleware = (request, response, next) => {
       authorization_token,
       ENVIRONMENT.JWT_SECRET_KEY
     );
-    console.log(authorization_token_payload);
     request.user = authorization_token_payload;
     next();
   } catch (error) {
@@ -18,6 +20,7 @@ const authorizationMiddleware = (request, response, next) => {
         status: 401,
       });
     } else {
+      console.log(error)
       response.status(500).json({
         ok: false,
         message: "Error interno del servidor",

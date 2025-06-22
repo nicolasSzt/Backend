@@ -7,8 +7,10 @@ class WorkspaceController {
         try{
             const {name, description} = request.body
             const {id} = request.user 
+            console.log('el id del usuario es :',id)
 
             const workspace_created = await workspaces_repository.create({name, description, owner_id: id})
+            console.log(workspace_created)
             await members_workspace_repository.create({
                 workspace_id: workspace_created._id,
                 user_id: id,
@@ -24,7 +26,6 @@ class WorkspaceController {
             )
         }
         catch(error){
-            
             if(error.status){ 
                 response.status(error.status).json(
                     {

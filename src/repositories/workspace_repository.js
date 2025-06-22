@@ -10,6 +10,12 @@ class WorkspacesRepository {
     });
     await workspace.save();
     console.log("Workspace creado exitosamente!");
+
+    return workspace;
+  }
+  
+  async getById(workspace_id) {
+    return await Workspaces.findById(workspace_id);
   }
 }
 

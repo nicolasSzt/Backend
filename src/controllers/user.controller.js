@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { ENVIRONMENT } from "../../enviroment.js";
 import transporter from "../config/mail.config.js";
+import { sendVerificationEmail } from "../services/mail.services.js";
 
 class UserController {
   async create(request, response) {
@@ -13,25 +14,8 @@ class UserController {
       password: request.body.password,
       email: request.body.email,
     });
-    response.send("Recibido!!");
+    response.json("Recibido!!");
   }
-
-  sendVerificationEmail = async ({ email, name, redirectUrl }) => {
-    const result = await transporter.sendMail({
-      from: ENVIRONMENT.GMAIL_USERNAME,
-      to: email,
-      subject: "Verifica tu correo electronico",
-      html: `
-            <h1>Bienvenido ${name}</h1>
-            <p>
-                Necesitamos que des click al siguiente link para verificar que esta es tu cuenta, en caso de no reconocer este registro desestima el mail.
-            </p>
-            <a href="${redirectUrl}">Verificar cuenta</a>
-            <span> Tienes 7 dias para dar click al link<span/>
-            `,
-    });
-    console.log("Mail enviado:", result);
-  };
 
   async register(request, response) {
     try {
@@ -41,7 +25,7 @@ class UserController {
         !request.body.password ||
         !request.body.email
       ) {
-        response.status(400).send({
+        response.status(400).json({
           message: "Registro invalido",
           ok: false,
         });
@@ -57,7 +41,7 @@ class UserController {
 
       const verification_token = jwt.sign(
         { email: request.body.email },
-        "clave_super_secreta123_nadie_la_conoce"
+        ENVIRONMENT.JWT_SECRET_KEY
       );
 
       await sendVerificationEmail({
@@ -65,13 +49,13 @@ class UserController {
         name: request.body.name,
         redirect_url: `http://localhost:3000/api/users/verify?verify_token=${verification_token}`,
       });
-      response.send({
+      response.json({
         ok: true,
       });
     } catch (error) {
       console.log("Hubo un error", error);
       if (error.status) {
-        response.status(error.status).send({
+        response.status(error.status).json({
           message: error.message,
           ok: false,
         });
@@ -79,13 +63,13 @@ class UserController {
       } else {
         response
           .status(500)
-          .send({ message: "Error interno del servidor", ok: false });
+          .json({ message: "Error interno del servidor", ok: false });
       }
     }
   }
 
   async getAll(request, response) {
-    response.send(userRepository.getAll());
+    response.json(userRepository.getAll());
   }
 
   async verify(request, response) {
@@ -93,7 +77,7 @@ class UserController {
       const verificationToken = request.query.verify_token;
 
       if (!verificationToken) {
-        response.status(400).send({
+        response.status(400).json({
           ok: false,
           messages: "Donde esta el token de verificacion",
         });
@@ -104,14 +88,14 @@ class UserController {
       const content = jwt.verify(verificationToken, ENVIRONMENT.JWT_SECRET_KEY);
 
       await userRepository.verifyUserEmail({ email: content.email });
-      response.send({
+      response.json({
         ok: true,
         message: "Usuario encontrado con exito",
       });
     } catch (error) {
       console.log("Hubo un error", error);
       if (error.status) {
-        response.status(error.status).send({
+        response.status(error.status).json({
           message: error.message,
           ok: false,
         });
@@ -119,7 +103,7 @@ class UserController {
       } else {
         response
           .status(500)
-          .send({ message: "Error interno del servidor", ok: false });
+          .json({ message: "Error interno del servidor", ok: false });
       }
     }
   }
@@ -154,12 +138,13 @@ class UserController {
         {
           name: user.name,
           email: user.email,
+          id: user._id,
           created_at: user.created_at,
         },
         ENVIRONMENT.JWT_SECRET_KEY
       );
 
-      response.send({
+      response.json({
         ok: true,
         status: 200,
         message: "Usuario logueado",
@@ -170,7 +155,7 @@ class UserController {
     } catch (error) {
       console.log("Hubo un error", error);
       if (error.status) {
-        response.status(error.status).send({
+        response.status(error.status).json({
           message: error.message,
           ok: false,
         });
@@ -178,7 +163,7 @@ class UserController {
       } else {
         response
           .status(500)
-          .send({ message: "Error interno del servidor", ok: false });
+          .json({ message: "Error interno del servidor", ok: false });
       }
     }
   }
