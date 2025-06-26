@@ -1,6 +1,8 @@
-import channel_repository from "../repositories/channel_repository";
+import channel_repository from "../repositories/channel_repository.js";
+import ApiResponse from "../utils/apiResponse.js";
 
 const channelMiddleware = async (req, res, next) => {
+  const apiResponse = new ApiResponse(res);
   const { channel_id } = req.params;
   const workspace = req.workspace;
   try {
@@ -18,16 +20,10 @@ const channelMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     if (error.status) {
-      response.status(error.status).send({
-        message: error.message,
-        ok: false,
-      });
-      return;
+      return apiResponse.error(error.message, error.status);
     } else {
-      console.log("Hubo un error", error);
-      response
-        .status(500)
-        .send({ message: "Error interno del servidor", ok: false });
+      console.error("Hubo un error", error);
+      return apiResponse.error();
     }
   }
 };

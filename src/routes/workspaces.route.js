@@ -17,7 +17,7 @@ workspace_router.get(
 )
 
 workspace_router.delete(
-    '/:workspace_id',
+    '/:workspace_id/:user_id',
     authorizationMiddleware,
     workpasceController.delete
 )

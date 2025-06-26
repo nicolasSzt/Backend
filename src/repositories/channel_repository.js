@@ -1,10 +1,10 @@
 import Channel from "../models/Channel.model.js";
 
 class ChannelRepository {
-  async create({ name, description, isPrivate, workspace_id, created_at }) {
+  async create({ title, description, isPrivate, workspace_id, created_at }) {
     try {
       const channel = new Channel({
-        name,
+        title,
         isPrivate,
         description,
         created_at,
@@ -19,10 +19,10 @@ class ChannelRepository {
 
     console.log("channel creado exitosamente!");
   }
-  async findByName(name, workspaceId) {
+  async findByName(title, workspaceId) {
     try {
       const channel = await Channel.findOne({
-        name,
+        title,
         workspace_id: workspaceId,
       });
       return channel;
@@ -30,14 +30,23 @@ class ChannelRepository {
       throw error;
     }
   }
-  async getAllByWorkspace(workspaceId){
-        try {
-            const channels = await Channel.find({workspace_id: workspaceId});
-            return channels;
-        } catch (error) {
-            throw error;
-        }
+  async findById(id) {
+    try {
+      const channel = await Channel.findById(id);
+      return channel;
+    } catch (error) {
+      throw error;
     }
+  }
+
+  async getAllByWorkspace(workspaceId) {
+    try {
+      const channels = await Channel.find({ workspace_id: workspaceId });
+      return channels;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 const channel_repository = new ChannelRepository();

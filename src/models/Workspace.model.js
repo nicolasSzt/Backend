@@ -1,27 +1,27 @@
 import { Schema, model } from "mongoose";
 
-const workspacesSchema = new Schema({
-  name: {
+const workspaceSchema = new Schema({
+  title: {
     type: String,
     required: true,
   },
-  
+
   description: {
     type: String,
   },
 
   owner_id: {
-    type: Schema.ObjectId,
-    ref: "user",
-    required: true, 
+    type: Schema.Types.ObjectId,
+    ref: "User", 
+    required: true,
   },
 
   created_at: {
     type: Date,
-    default: new Date(),
+    default: Date.now,
   },
 });
 
-const Workspaces = model("workspaces", workspacesSchema);
+const Workspace = model("Workspace", workspaceSchema);
 
-export default Workspaces;
+export default Workspace;

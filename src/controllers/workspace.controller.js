@@ -1,103 +1,104 @@
-import { AVAILABLE_ROLES_WORKSPACE_MEMBERS } from "../dictionaries/members_workspace_roles.js"
-import members_workspace_repository from "../repositories/membersWorkspace.repository.js"
-import workspaces_repository from "../repositories/workspace_repository.js"
+import { AVAILABLE_ROLES_WORKSPACE_MEMBERS } from "../dictionaries/members_workspace_roles.js";
+import members_workspace_repository from "../repositories/membersWorkspace.repository.js";
+import workspaces_repository from "../repositories/workspace_repository.js";
+import ApiResponse from "../utils/apiResponse.js";
 
 class WorkspaceController {
-    async create(request, response){
-        try{
-            const {name, description} = request.body
-            const {id} = request.user 
-            console.log('el id del usuario es :',id)
+  async create(request, response) {
+    const apiResponse = new ApiResponse(response);
+    try {
+      const { title, description } = request.body;
+      const { id } = request.user;
 
-            const workspace_created = await workspaces_repository.create({name, description, owner_id: id})
-            console.log(workspace_created)
-            await members_workspace_repository.create({
-                workspace_id: workspace_created._id,
-                user_id: id,
-                role: AVAILABLE_ROLES_WORKSPACE_MEMBERS.ADMIN
-            })
-            response.status(201).json(
-                {
-                    ok: true, 
-                    message:'Workspace creado exitosamente',
-                    status: 201,
-                    data: {}
-                }
-            )
-        }
-        catch(error){
-            if(error.status){ 
-                response.status(error.status).json(
-                    {
-                        message: error.message, 
-                        status: error.status,
-                        ok: false
-                    }
-                )
-                return 
-            }
-            else{
-                console.log('Hubo un error', error)
-                response.status(500).json(
-                    {
-                        message: 'Error interno del servidor', 
-                        ok: false
-                    }
-                )
-            }
-        }
+      const exists =
+        await workspaces_repository.getByTitleAndOwner(
+          title,
+          id
+        );
+
+      if (exists) {
+        return apiResponse.error("Ya existe un workspace con ese título", 400);
+      }
+
+      const workspace = await workspaces_repository.create({
+        title,
+        description,
+        owner_id: id,
+      });
+
+      await members_workspace_repository.create({
+        workspace_id: workspace._id,
+        user_id: id,
+        role: AVAILABLE_ROLES_WORKSPACE_MEMBERS.ADMIN,
+      });
+
+      return apiResponse.created(
+        "Workspace creado exitosamente",
+        { workspace },
+        201
+      );
+    } catch (error) {
+      console.error("Hubo un error", error);
+      return apiResponse.error();
     }
-    async delete(request, response) {
-        try {
-            const workspace_id = request.params.workspace_id
-            const user_id = request.user.id
-            await workspaces_repository.deleteWorkspaceFromOwner(user_id, workspace_id)
+  }
 
-            response.status(200).json(
-                {
-                    ok: true,
-                    message: 'Workspace eliminado correctamente',
-                    status: 200,
-                    data: {}
-                }
-            )
-            return
-        } catch (error) {
+  async getAll(request, response) {
+    const apiResponse = new ApiResponse(response);
+    try {
+      const workspaces = await workspaces_repository.getAll();
 
-            if (error.status) {
-                response.status(error.status).send(
-                    {
-                        message: error.message,
-                        status: error.status,
-                        ok: false
-                    }
-                )
-                return
-            } else {
-                console.error('Hubo un error', error)
-                response.status(500).json(
-                    {
-                        message: 'Error interno del servidor',
-                        ok: false
-                    }
-                )
-            }
-        };
+      return apiResponse.success(
+        "Todos los workspaces del sistema",
+        { workspaces },
+        200
+      );
+    } catch (error) {
+      return apiResponse.error();
     }
+  }
+  async delete(request, response) {
+    const apiResponse = new ApiResponse(response);
+    try {
+      const workspace_id = request.params.workspace_id;
+      const user_id = request.user.id;
 
-    async getAllByMember (request, response){
-        const {id} = request.user
-        const workspaces = await members_workspace_repository.getAllByUserId(id)
-        response.json({
-            ok: true, 
-            status: 200,
-            message:'Lista de workspaces',
-            data: {
-                workspaces: workspaces
-            }
-        })
+      const deletedWorkspace =
+        await workspaces_repository.deleteWorkspaceFromOwner(
+          user_id,
+          workspace_id
+        );
+
+      if (!deletedWorkspace) {
+        return apiResponse.error(
+          "Workspace no encontrado o no autorizado",
+          404
+        );
+      }
+
+      await members_workspace_repository.deleteAllByWorkspaceId(workspace_id);
+
+      return apiResponse.success("Workspace eliminado correctamente", {});
+    } catch (error) {
+      console.error("Hubo un error", error);
+      return apiResponse.error();
     }
+  }
+
+  async getAllByMember(request, response) {
+    const apiResponse = new ApiResponse(response);
+    try {
+      const { id } = request.user;
+
+      const workspacesMember = await members_workspace_repository.getAllByUserId(id);
+
+      return apiResponse.created("Lista de workspaces", { workspacesMember });
+    } catch (error) {
+      console.error("Hubo un error", error);
+      return apiResponse.error();
+    }
+  }
 }
 
-const workspace_controller = new WorkspaceController
-export default workspace_controller
+const workspace_controller = new WorkspaceController();
+export default workspace_controller;

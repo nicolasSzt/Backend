@@ -4,9 +4,10 @@ import express from "express";
 import usersRouter from "./routes/users.router.js";
 import memberWorkspaceRouter from "./routes/memberWorkspace.router.js";
 import channelRouter from "./routes/channel.router.js";
-import productsRouter from './routes/product.routes.js'
+import productsRouter from "./routes/product.routes.js";
 import workspace_router from "./routes/workspaces.route.js";
 import { ENVIRONMENT } from "../enviroment.js";
+import messageRouter from "./routes/messages.router.js";
 
 connectDB();
 
@@ -27,6 +28,7 @@ app.use("/api/workspaces", workspace_router);
 app.use("/api/products", productsRouter);
 app.use("/api/members", memberWorkspaceRouter);
 app.use("/api/channels", channelRouter);
+app.use("/api/messages", messageRouter);
 
 app.listen(ENVIRONMENT.PORT, () => {
   console.log(

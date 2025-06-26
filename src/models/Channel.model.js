@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const channelSchema = new Schema({
-  name: {
+  title: {
     type: String,
     required: true,
     trim: true,

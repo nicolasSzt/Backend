@@ -1,16 +1,15 @@
 import ChannelMessage from "../models/channel_messages.model.js";
 
-class MessagesRepository {
+class ChannelMessagesRepository {
   async create({ channel_id, user_id, content }) {
     try {
-      const message = new ChannelMessage({
+      const channel_message = new ChannelMessage({
         channel_id,
         user_id,
         content,
       });
-      await message.save();
-      console.log("Message created successfully!");
-      return message;
+      await channel_message.save();
+      return channel_message;
     } catch (error) {
       console.error("Error creating message:", error);
       throw error;
@@ -28,6 +27,5 @@ class MessagesRepository {
   }
 }
 
-const messages_repository = new MessagesRepository();
-export default messages_repository;
-
+const channel_messages_repository = new ChannelMessagesRepository();
+export default channel_messages_repository;

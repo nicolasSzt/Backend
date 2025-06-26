@@ -1,22 +1,18 @@
 import { Schema, model } from "mongoose";
 
 const ChannelMessageSchema = new Schema({
-  member_channel_id: {
-    type: Schema.ObjectId,
-    required: true,
-    ref: "MemberChannel",
-  },
-
   channel_id: {
     type: Schema.ObjectId,
     required: true,
     ref: "Channel",
   },
+
   user_id: {
     type: Schema.ObjectId,
     required: true,
-    ref: "User",
+    ref: "users",
   },
+
   content: {
     type: String,
     required: true,

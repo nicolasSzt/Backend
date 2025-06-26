@@ -1,20 +1,13 @@
 import ChannelMessage from "../models/channel_messages.model.js";
 
 class ChannelRepository {
-  async create({
-    member_channel_id,
-    channel_id,
-    content,
-    created_at,
-    workspace_id,
-  }) {
+  async create({ channel_id, content, user_id, created_at }) {
     try {
       const channel = new ChannelMessage({
-        member_channel_id,
         channel_id,
         content,
+        user_id,
         created_at,
-        workspace_id,
       });
 
       await channel.save();
@@ -22,6 +15,23 @@ class ChannelRepository {
     } catch (error) {
       console.error("Error creating channel:", error);
     }
+  }
+  async getAllByChannelId(channel_id) {
+    const channel_messages = await ChannelMessage.find({
+      channel_id: channel_id,
+    }).populate("user_id", "name");
+
+    const channel_messages_formatted = channel_messages.map(
+      (channel_message) => {
+        return {
+          _id: channel_message._id,
+          user: channel_message.user_id,
+          content: channel_message.content,
+          created_at: channel_message.created_at,
+        };
+      }
+    );
+    return channel_messages_formatted;
   }
 }
 

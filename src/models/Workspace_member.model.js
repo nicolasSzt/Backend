@@ -1,4 +1,4 @@
-import { Schema,model } from "mongoose";
+import { Schema, model } from "mongoose";
 import { AVAILABLE_ROLES_WORKSPACE_MEMBERS } from "../dictionaries/members_workspace_roles.js";
 
 const workspaceMembersSchema = new Schema({
@@ -9,8 +9,8 @@ const workspaceMembersSchema = new Schema({
   },
 
   user_id: {
-    type: Schema.ObjectId,
-    ref: "Workspace",
+    type: Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
 
@@ -21,9 +21,6 @@ const workspaceMembersSchema = new Schema({
   },
 });
 
-const WorkspaceMember = model(
-  "members_workspaces",
-  workspaceMembersSchema
-);
+const WorkspaceMember = model("members_workspaces", workspaceMembersSchema);
 
 export default WorkspaceMember;

@@ -1,32 +1,55 @@
-import { MessagesService } from "../services/messages.service.js";
+import channel_messages_service from "../services/channel_messages.services.js";
+import ApiResponse from "../utils/apiResponse.js";
 
 class MessagesController {
-  constructor() {
-    this.messagesService = new MessagesService();
-  }
-
   async create(request, response) {
+    const apiResponse = new ApiResponse(response);
     try {
-      const { channel_id } = request.params;
-      const { text } = request.body;
-      const message = await this.messagesService.create(channel_id, text);
-      response.send(message);
+      const { content } = request.body;
+
+      if (!content || content.trim() === "") {
+        return apiResponse.error("Content is required", 400);
+      }
+
+      const messages_list = await channel_messages_service.create({
+        user_id: request.user.id,
+        channel_id: request.channel._id,
+        content,
+      });
+
+      return apiResponse.created("Mensaje creado exitosamente", {
+        messages: messages_list,
+      });
     } catch (error) {
-      console.log(error);
-      response.status(500).send({ message: "Error interno del servidor" });
-    }
-  }
-  async getAllByChannel(request, response) {
-    try {
-      const { channel_id } = request.params;
-      const messages = await this.messagesService.getAllByChannel(channel_id);
-      response.send(messages);
-    } catch (error) {
-      console.log(error);
-      response.status(500).send({ message: "Error interno del servidor" });
+      console.error("Hubo un error", error);
+      if (error.status) {
+        return apiResponse.error(error.message, error.status);
+      }
+      return apiResponse.error();
     }
   }
 
+  async getAllByChannel(request, response) {
+    const apiResponse = new ApiResponse(response);
+    try {
+      const { channel_id } = request.params;
+      
+      const messages_list = await channel_messages_service.getAllByChannelId({
+        channel_id: channel_id,
+      });
+
+      return apiResponse.success("Mensajes obtenidos exitosamente", {
+        messages: messages_list,
+      });
+    } catch (error) {
+      console.error("Hubo un error", error);
+      if (error.status) {
+        return apiResponse.error(error.message, error.status);
+      }
+      return apiResponse.error();
+    }
+  }
 }
 
-export default new MessagesController();
+const messages_controller = new MessagesController();
+export default messages_controller;

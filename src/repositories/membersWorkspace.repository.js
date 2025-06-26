@@ -14,7 +14,18 @@ class MembersWorkspaceRepository {
   }
 
   async getAllByUserId(user_id) {
-    return await WorkspaceMember.find({ user_id: user_id });
+    const workspaces_list = await WorkspaceMember.find({
+      user_id: user_id,
+    }).populate("workspace_id", "title");
+
+    const workspacesIsMember = workspaces_list.map((workspaceMember) => ({
+      member_id: workspaceMember._id,
+      workspace: workspaceMember.workspace_id,
+      user_id: workspaceMember.user_id,
+      role: workspaceMember.role,
+    }));
+
+    return workspacesIsMember;
   }
 
   async getMemberByWorkspaceIdAndUserId(workspace_id, user_id) {
@@ -22,6 +33,9 @@ class MembersWorkspaceRepository {
       workspace_id: workspace_id,
       user_id: user_id,
     });
+  }
+  async deleteAllByWorkspaceId(workspace_id) {
+    return await WorkspaceMember.deleteMany({ workspace_id });
   }
 }
 
