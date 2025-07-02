@@ -10,11 +10,7 @@ class WorkspaceController {
       const { title, description } = request.body;
       const { id } = request.user;
 
-      const exists =
-        await workspaces_repository.getByTitleAndOwner(
-          title,
-          id
-        );
+      const exists = await workspaces_repository.getByTitleAndOwner(title, id);
 
       if (exists) {
         return apiResponse.error("Ya existe un workspace con ese título", 400);
@@ -43,7 +39,7 @@ class WorkspaceController {
     }
   }
 
-  async getAll(request, response) {
+  async getAll(request, response, next) {
     const apiResponse = new ApiResponse(response);
     try {
       const workspaces = await workspaces_repository.getAll();
@@ -54,7 +50,7 @@ class WorkspaceController {
         200
       );
     } catch (error) {
-      return apiResponse.error();
+      next(error);
     }
   }
   async delete(request, response) {
@@ -90,7 +86,8 @@ class WorkspaceController {
     try {
       const { id } = request.user;
 
-      const workspacesMember = await members_workspace_repository.getAllByUserId(id);
+      const workspacesMember =
+        await members_workspace_repository.getAllByUserId(id);
 
       return apiResponse.created("Lista de workspaces", { workspacesMember });
     } catch (error) {

@@ -16,7 +16,7 @@ const workspaceMembersSchema = new Schema({
 
   role: {
     type: String,
-    require: true,
+    required: true,
     enum: AVAILABLE_ROLES_WORKSPACE_MEMBERS,
   },
 });

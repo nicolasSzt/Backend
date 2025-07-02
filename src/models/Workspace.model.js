@@ -8,6 +8,7 @@ const workspaceSchema = new Schema({
 
   description: {
     type: String,
+    required: true,
   },
 
   owner_id: {

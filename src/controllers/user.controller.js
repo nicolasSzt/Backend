@@ -2,8 +2,8 @@ import userRepository from "../repositories/user_repository.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { ENVIRONMENT } from "../../enviroment.js";
-import transporter from "../config/mail.config.js";
 import { sendVerificationEmail } from "../services/mail.services.js";
+import ApiResponse from "../utils/apiResponse.js";
 
 class UserController {
   async create(request, response) {
@@ -67,9 +67,17 @@ class UserController {
       }
     }
   }
-
   async getAll(request, response) {
-    response.json(userRepository.getAll());
+    const apiResponse = new ApiResponse(response);
+
+    try {
+      const users = await userRepository.getAllUsers();
+      console.log("users", users);
+      apiResponse.success("Users retrieved successfully", { users });
+    } catch (error) {
+      console.error("Error retrieving users:", error);
+      apiResponse.error("Error retrieving users");
+    }
   }
 
   async verify(request, response) {

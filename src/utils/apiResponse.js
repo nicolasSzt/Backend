@@ -13,7 +13,7 @@ class ApiResponse {
   }
 
   success(message = "Success", data = {}) {
-    return this.send({
+    return this.response.json({
       status: 200,
       ok: true,
       message,
@@ -22,7 +22,7 @@ class ApiResponse {
   }
 
   created(message = "Created successfully", data = {}) {
-    return this.send({
+    return this.response.json({
       status: 201,
       ok: true,
       message,
@@ -31,20 +31,20 @@ class ApiResponse {
   }
 
   error(message = "Internal server error", status = 500, data = {}) {
-    return this.send({
+    return this.json({
       status,
       ok: false,
       message,
       data,
     });
   }
-
-  badRequest(message = "Bad request", data = {}) {
-    return this.error(message, 400, data);
-  }
-
-  notFound(message = "Not found", data = {}) {
-    return this.error(message, 404, data);
+  clientError(message = "Bad request", data = {}) {
+    return this.response.json({
+      status: 400,
+      ok: false,
+      message,
+      data,
+    });
   }
 }
 
