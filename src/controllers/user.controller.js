@@ -197,7 +197,7 @@ class UserController {
         await sendVerificationEmail({
           email,
           name: user.name,
-          redirect_url: `https://backend-90zjciber-nicolas-projects-e7534192.vercel.app/api/users/verify?verify_token=${verification_token}`,
+          redirect_url: `${ENVIRONMENT.CLIENT_URL}/api/users/verify?verify_token=${verification_token}`,
         });
         response.send({
           ok: true,
