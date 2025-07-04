@@ -47,7 +47,7 @@ class UserController {
       await sendVerificationEmail({
         email: request.body.email,
         name: request.body.name,
-        redirect_url: `http://localhost:3000/api/users/verify?verify_token=${verification_token}`,
+        redirect_url: `${ENVIRONMENT.CLIENT_URL}/api/users/verify?verify_token=${verification_token}`,
       });
       response.json({
         ok: true,
