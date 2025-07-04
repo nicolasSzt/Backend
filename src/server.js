@@ -14,12 +14,7 @@ connectDB();
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(
-  cors({
-    origin: "https://front-p55stbe6l-nicolas-projects-e7534192.vercel.app",
-    methods: "GET,POST,PUT,DELETE",
-  })
-);
+app.use(cors());
 app.get("/", (request, response) => {
   response.send("<h1>Server is running</h1>");
 });

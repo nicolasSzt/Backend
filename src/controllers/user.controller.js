@@ -133,7 +133,7 @@ class UserController {
       }
 
       if (!user.verified) {
-        throw { status: 400, message: "Usuario no verificado" };
+        throw { status: 403, message: "Usuario no verificado" };
       }
 
       const is_same_password = await bcrypt.compare(password, user.password);
