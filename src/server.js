@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://front-sage-omega.vercel.app',
+    origin: "https://front-p55stbe6l-nicolas-projects-e7534192.vercel.app",
     methods: "GET,POST,PUT,DELETE",
   })
 );
