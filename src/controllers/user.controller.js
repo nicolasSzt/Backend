@@ -1,9 +1,9 @@
 import userRepository from "../repositories/user_repository.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { ENVIRONMENT } from "../../enviroment.js";
 import { sendVerificationEmail } from "../services/mail.services.js";
 import ApiResponse from "../utils/apiResponse.js";
+import { ENVIRONMENT } from "../../enviroment.js";
 
 class UserController {
   async create(request, response) {
@@ -16,7 +16,6 @@ class UserController {
     });
     response.json("Recibido!!");
   }
-
   async register(request, response) {
     try {
       if (
@@ -47,7 +46,8 @@ class UserController {
       await sendVerificationEmail({
         email: request.body.email,
         name: request.body.name,
-        redirect_url: `${ENVIRONMENT.CLIENT_URL}/api/users/verify?verify_token=${verification_token}`,
+        redirectUrl: `https://backend-90zjciber-nicolas-projects-e7534192.vercel.app/api/users/verify?verify_token=${verification_token}`,
+    
       });
       response.json({
         ok: true,
