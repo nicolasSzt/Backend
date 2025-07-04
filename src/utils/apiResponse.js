@@ -10,6 +10,7 @@ class ApiResponse {
       message,
       data,
     });
+    
   }
 
   success(message = "Success", data = {}) {
