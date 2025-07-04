@@ -94,8 +94,11 @@ class UserController {
       }
 
       const content = jwt.verify(verificationToken, ENVIRONMENT.JWT_SECRET_KEY);
+      console.log("content", content);
 
       await userRepository.verifyUserEmail({ email: content.email });
+
+      con;
       response.json({
         ok: true,
         message: "Usuario encontrado con exito",
@@ -194,7 +197,7 @@ class UserController {
         await sendVerificationEmail({
           email,
           name: user.name,
-          redirect_url: `http://localhost:3000/api/users/verify?verify_token=${verification_token}`,
+          redirect_url: `https://backend-90zjciber-nicolas-projects-e7534192.vercel.app/api/users/verify?verify_token=${verification_token}`,
         });
         response.send({
           ok: true,
