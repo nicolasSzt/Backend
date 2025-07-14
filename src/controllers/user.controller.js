@@ -46,7 +46,7 @@ class UserController {
       await sendVerificationEmail({
         email: request.body.email,
         name: request.body.name,
-        redirectUrl: `https://frontend-slack-clone-e7534192.vercel.app/verify?verify_token=${verification_token}`,
+        redirectUrl: `${ENVIRONMENT.CLIENT_URL}/verify?verify_token=${verification_token}`,
       });
       response.json({
         ok: true,
