@@ -46,8 +46,7 @@ class UserController {
       await sendVerificationEmail({
         email: request.body.email,
         name: request.body.name,
-        redirectUrl: `https://backend-90zjciber-nicolas-projects-e7534192.vercel.app/api/users/verify?verify_token=${verification_token}`,
-    
+        redirectUrl: `https://frontend-slack-clone-e7534192.vercel.app/verify?verify_token=${verification_token}`,
       });
       response.json({
         ok: true,
@@ -98,7 +97,6 @@ class UserController {
 
       await userRepository.verifyUserEmail({ email: content.email });
 
-      con;
       response.json({
         ok: true,
         message: "Usuario encontrado con exito",
