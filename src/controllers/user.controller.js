@@ -130,7 +130,7 @@ class UserController {
       }
 
       if (!user) {
-        throw { status: 400, message: "Usuario no encontrado" };
+        throw { status: 404, message: "Usuario no encontrado" };
       }
 
       if (!user.verified) {
